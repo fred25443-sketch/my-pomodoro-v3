@@ -19,7 +19,6 @@
             color: var(--text-main); margin: 0; display: flex; height: 100vh;
             background-color: var(--bg-color);
         }
-        /* 暱稱登入牆樣式 */
         #login-overlay {
             position: fixed; top:0; left:0; width:100vw; height:100vh;
             background: rgba(255,255,255,0.95); z-index: 999;
@@ -108,7 +107,6 @@
         <h3 id="currentTaskTitle">🎯 請先在左側選定當前執行的任務</h3>
         <div id="timeDisplay" class="time-display">25:00</div>
         <button id="timerBtn" style="font-size: 1.1rem; padding: 10px 30px; border-radius: 30px;" onclick="toggleTimer()">啟動番茄鐘</button>
-        <button style="font-size: 0.9rem; padding: 6px 14px; border-radius: 30px; background:#666; margin-left:10px;" onclick="mockSpeedup()">⚡ 快速測試</button>
     </div>
 
     <div id="stats-panel">
@@ -141,7 +139,6 @@
     let timeLeft = durations[currentState];
     let userNickname = localStorage.getItem("pomodoro_nickname") || "";
 
-    // 封裝自訂 fetch，自動在 Header 帶入使用者暱稱
     async function customFetch(url, options = {}) {
         if (!options.headers) options.headers = {};
         options.headers["X-User-Nickname"] = encodeURIComponent(userNickname);
@@ -253,12 +250,6 @@
         }
     }
 
-    function mockSpeedup() {
-        if (currentIndex === null && currentState === "WORK") return alert("請先選定當前執行的任務！");
-        timeLeft = 2; updateTimerDisplay();
-        if(!isRunning) toggleTimer();
-    }
-
     async function handleTimeUp() {
         clearInterval(timerInterval); isRunning = false;
         document.getElementById("timerBtn").innerText = "啟動番茄鐘";
@@ -346,7 +337,6 @@
         }
     }
     
-    // 優先執行登入檢查
     checkLogin();
 </script>
 </body>
