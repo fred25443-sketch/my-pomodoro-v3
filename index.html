@@ -145,6 +145,7 @@
         return fetch(url, options);
     }
 
+    // 檢查登入狀態
     function checkLogin() {
         if (userNickname) {
             document.getElementById("login-overlay").style.display = "none";
@@ -237,15 +238,32 @@
         document.getElementById("timeDisplay").innerText = `${mins}:${secs}`;
     }
 
+    // 核心修復：啟動與控制計時器
     function toggleTimer() {
         if (currentIndex === null && currentState === "WORK") return alert("請先選定你要執行的任務！");
         if (isRunning) {
-            clearInterval(timerInterval); document.getElementById("timerBtn").innerText = "恢復專注"; isRunning = false;
+            clearInterval(timerInterval); 
+            document.getElementById("timerBtn").innerText = "恢復專注"; 
+            isRunning = false;
         } else {
-            isRunning = true; document.getElementById("timerBtn").innerText = "暫停";
+            isRunning = true; 
+            document.getElementById("timerBtn").innerText = "暫停";
+            
+            // 安全防禦：如果時間已經小於等於0（通常是剛跑完一輪），重新啟動時先重設時間
+            if (timeLeft <= 0) {
+                timeLeft = durations[currentState];
+            }
+
             timerInterval = setInterval(() => {
-                timeLeft--; updateTimerDisplay();
-                if(timeLeft <= 0) handleTimeUp();
+                timeLeft--; 
+                updateTimerDisplay();
+                
+                // 🛡️ 核心修復點：當倒數到 0 時，立刻清除定時器，阻止它在下一秒扣成負數
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    handleTimeUp(); // 執行時間到的邏輯（換成休息或工作）
+                }
             }, 1000);
         }
     }
